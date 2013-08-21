@@ -1,0 +1,19 @@
+{
+  "name": "nurl",
+  "version": "0.0.0",
+  "description": "url shortning api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "keywords": [
+    "shorten",
+    "urls",
+    "javascript",
+    "workshop",
+    "project"
+  ],
+  "author": "sideshowcoder",
+  "license": "MIT"
+}
