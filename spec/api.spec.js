@@ -45,5 +45,22 @@ describe("POST '/'", function(){
       done()
     })
   })
+
+  it("errors on the wrong url", function(done) {
+    var q = { url: testUrl + "/foo/bar", json: { u: "http://google.com" } }
+    request.post(q, function(err, res, body) {
+      expect(res.statusCode).toBe(404)
+      done()
+    })
+  })
+
+  it("errors on the wrong method", function(done) {
+    var q = { url: testUrl + "/", json: { u: "http://google.com" } }
+    request.put(q, function(err, res, body) {
+      expect(res.statusCode).toBe(404)
+      done()
+    })
+  })
+
 })
 
