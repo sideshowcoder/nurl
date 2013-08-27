@@ -1,3 +1,4 @@
+// Router
 var Router = function() {
   this.routes = {
     'POST': [],
@@ -13,21 +14,27 @@ Router.prototype.addRoute = function(regex, method, fn) {
 
 Router.prototype.dispatch = function(req, res) {
   this.routes[req.method].forEach(function(matcher) {
-    if(matcher.path.test(req.url))  matcher.func(req, res)
+    if(matcher.path.test(req.url)) matcher.func(req, res)
   })
   res.statusCode = 404
   res.end()
 }
 
+// Handle requests
 var createShortUrl = function(req, res) {
-  res.end()
+  res.end("nurl")
 }
 
 var router = new Router()
-router.addRoute(/^\/$/, 'POST', createShortUrl)
-
+router.addRoute(/^\/$/, "POST", createShortUrl)
 
 var nurl = function(req, res) { router.dispatch(req, res) }
+
+// Setup server if not in test mode
+if(process.env.NODE_ENV !== "test") {
+  var http = require("http")
+  http.createServer(nurl).listen(3000)
+}
 
 module.exports = nurl
 
