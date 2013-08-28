@@ -22,11 +22,13 @@ Router.prototype.dispatch = function(req, res) {
   res.end()
 }
 
+
+
 // Body Parser
 var util = require("util")
 var Transform = require("stream").Transform
 var BodyParser = function() {
-  Transform.call(this, {})
+  Transform.call(this)
   this._body= ""
   this._readableState.objectMode = true;
   this._writableState.objectMode = false;
@@ -51,7 +53,7 @@ BodyParser.prototype._flush = function(fn) {
 
 // Result Stringify
 var ResultStringify = function() {
-  Transform.call(this, {})
+  Transform.call(this)
   this._readableState.objectMode = false;
   this._writableState.objectMode = true;
 }
@@ -62,10 +64,25 @@ ResultStringify.prototype._transform = function(chunk, encoding, done) {
   done()
 }
 
+// Create short URL
+var store = []
+var URLShortner = function() {
+  Transform.call(this, { objectMode: true })
+}
+util.inherits(URLShortner, Transform)
+
+URLShortner.prototype._transform = function(request, encoding, done) {
+  var id = store.push(request.u)
+  var shortend = { s: "/" + id }
+  this.push(shortend)
+  done()
+}
+
 // Handle requests
 var createShortUrl = function(req, res) {
   var bodyParser = new BodyParser()
   var stringify = new ResultStringify()
+  var shortner = new URLShortner()
   bodyParser.on("error", function(err) {
     res.statusCode = 500
     res.end("Invalid JSON")
@@ -74,7 +91,12 @@ var createShortUrl = function(req, res) {
     res.statusCode = 500
     res.end("Internal Server Error")
   })
+  shortner.on("error", function(err) {
+    res.statusCode = 500
+    res.end("Internal Server Error")
+  })
   req.pipe(bodyParser)
+     .pipe(shortner)
      .pipe(stringify)
      .pipe(res)
 }
@@ -91,4 +113,3 @@ if(process.env.NODE_ENV !== "test") {
 }
 
 module.exports = nurl
-
