@@ -39,7 +39,13 @@ BodyParser.prototype._transform = function(chunk, encoding, done) {
 }
 
 BodyParser.prototype._flush = function(fn) {
-  this.push(JSON.parse(this._body))
+  var parsed
+  try {
+    parsed = JSON.parse(this._body)
+    this.push(JSON.parse(this._body))
+  } catch(e) {
+    this.emit("error", e)
+  }
   fn()
 }
 
@@ -60,6 +66,14 @@ ResultStringify.prototype._transform = function(chunk, encoding, done) {
 var createShortUrl = function(req, res) {
   var bodyParser = new BodyParser()
   var stringify = new ResultStringify()
+  bodyParser.on("error", function(err) {
+    res.statusCode = 500
+    res.end("Invalid JSON")
+  })
+  stringify.on("error", function(err) {
+    res.statusCode = 500
+    res.end("Internal Server Error")
+  })
   req.pipe(bodyParser)
      .pipe(stringify)
      .pipe(res)

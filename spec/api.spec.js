@@ -70,9 +70,19 @@ describe("POST '/'", function(){
       })
   })
 
+  it("errors on non json input", function(done) {
+    var q = { url: testUrl, body: "this is no json" }
+      request.post(q, function(err, res, body) {
+        expect(res.statusCode).toBe(500)
+        expect(body).toBe("Invalid JSON")
+        done()
+      })
+  })
+
   it("creates a short url", function(done) {
     var q = { url: testUrl, json: { u: "http://google.com" } }
       request.post(q, function(err, res, body) {
+        expect(body.s).toBeTruthy()
         done()
       })
   })
