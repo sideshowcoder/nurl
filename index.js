@@ -82,9 +82,7 @@ BodyParser.prototype._transform = function(chunk, encoding, done) {
  * @param fn
  */
 BodyParser.prototype._flush = function(fn) {
-  var parsed
   try {
-    parsed = JSON.parse(this._body)
     this.push(JSON.parse(this._body))
   } catch(e) {
     this.emit("error", e)
